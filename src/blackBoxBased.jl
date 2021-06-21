@@ -38,11 +38,22 @@ function dampenAboveBestHardbandpass(freqPop, sortIndArray, FourierObj, dampenAm
     return newFreqPop
 end
 
-function perturbWorst(setProbW)
+function perturbRand(setProbW, frac=1 / 5)
     pop = setProbW.runcontrollers[end].optimizer.population.individuals
-    theChosenPert = rand(1:size(pop, 2), 100)
-            # add pink noise with .1 of the norm to 100 randomly selected vectors
-    perturbing = dct(cat([pinkStart(128, c) for c = range(1, 3, length=100)]..., dims=2), 1)
+    theChosenPert = rand(1:size(pop, 2), round(Int, size(pop, 2) * frac))
+    # add pink noise with .1 of the norm to 100 randomly selected vectors
+    perturbing = dct(pinkStart(Ndims, -1, popSize), 1)
+    perturbing ./= [norm(x) for x in eachslice(perturbing, dims=2)]'
+    pop[:, theChosenPert] += perturbing .* [norm(x) for x in eachslice(pop[:,theChosenPert], dims=2)]'
+    adjustPopulation!(setProbW, pop)
+end
+
+function perturbWorst(setProbW, scores, frac=1 / 5)
+    pop = setProbW.runcontrollers[end].optimizer.population.individuals
+    nPert = round(Int, size(pop, 2) * frac)
+    theChosenPert = sortperm(scores)[(end + 1 - nPert):end]
+    # add pink noise with .1 of the norm to the worst frac vectors
+    perturbing = dct(pinkStart(Ndims, -1, popSize), 1)
     perturbing ./= [norm(x) for x in eachslice(perturbing, dims=2)]'
     pop[:, theChosenPert] += perturbing .* [norm(x) for x in eachslice(pop[:,theChosenPert], dims=2)]'
     adjustPopulation!(setProbW, pop)

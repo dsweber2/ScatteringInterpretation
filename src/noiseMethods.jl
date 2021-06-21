@@ -11,4 +11,16 @@ function genNoise(sz, K, noiseType)
     end
 end
 
-pinkStart(n, c=2) = irfft(randn(ComplexF64, n >> 1 + 1) .* 1 ./ (1:(n >> 1 + 1)).^c, n)
+"""
+    pinkStart(n, c=2, m=1)
+generate `m` pink noise samples with exponent `c` and length `n`
+"""
+function pinkStart(n, c=2, m=1)
+    if c > 0
+        return irfft(randn(ComplexF64, n >> 1 + 1, m) .* 1 ./ (1:(n >> 1 + 1)).^c, n, 1)
+    else
+        # otherwise, choose c randomly for each location uniformly over the interval [.5,3]
+        c = (.5 .+ 2.5 * rand(m))'
+        return irfft(randn(ComplexF64, n >> 1 + 1, m) .* 1 ./ (1:(n >> 1 + 1)).^c, n, 1)
+    end
+end
