@@ -40,21 +40,29 @@ end
 
 function perturbRand(setProbW, frac=1 / 5)
     pop = setProbW.runcontrollers[end].optimizer.population.individuals
-    theChosenPert = rand(1:size(pop, 2), round(Int, size(pop, 2) * frac))
+    Ndims = size(pop, 1)
+    popSize = size(pop, 2)
+    theChosenPert = rand(1:size(pop, 2), round(Int, popSize * frac))
     # add pink noise with .1 of the norm to 100 randomly selected vectors
-    perturbing = dct(pinkStart(Ndims, -1, popSize), 1)
-    perturbing ./= [norm(x) for x in eachslice(perturbing, dims=2)]'
-    pop[:, theChosenPert] += perturbing .* [norm(x) for x in eachslice(pop[:,theChosenPert], dims=2)]'
+    perturbing = dct(pinkStart(Ndims, -1, nPert), 1)
+    perturbing ./= [norm(x) for x in eachslice(perturbing, dims = 2)]'
+    pop[:, theChosenPert] += perturbing .* [norm(x) for x in eachslice(pop[:, theChosenPert], dims = 2)]'
     adjustPopulation!(setProbW, pop)
 end
 
-function perturbWorst(setProbW, scores, frac=1 / 5)
+function perturbWorst(setProbW, scores, frac = 1 / 5, transform = x -> dct(x, 1), boundLevel = 1e5, noiseColor = -1)
     pop = setProbW.runcontrollers[end].optimizer.population.individuals
+    Ndims = size(pop, 1)
+    popSize = size(pop, 2)
     nPert = round(Int, size(pop, 2) * frac)
-    theChosenPert = sortperm(scores)[(end + 1 - nPert):end]
-    # add pink noise with .1 of the norm to the worst frac vectors
-    perturbing = dct(pinkStart(Ndims, -1, popSize), 1)
-    perturbing ./= [norm(x) for x in eachslice(perturbing, dims=2)]'
-    pop[:, theChosenPert] += perturbing .* [norm(x) for x in eachslice(pop[:,theChosenPert], dims=2)]'
+    theChosenPert = sortperm(scores)[(end+1-nPert):end]
+    # add pink noise
+    perturbing = transform(pinkStart(Ndims, noiseColor, nPert))
+    # with .1 of the norm to the worst frac vectors
+    targValue = 0.3 * [norm(x) for x in eachslice(pop[:, theChosenPert], dims = 2)]' ./ [norm(x) for x in eachslice(perturbing, dims = 2)]'
+    maxValue = minimum(boundLevel .- abs.(pop[:, theChosenPert]), dims = 1) ./ maximum(abs.(perturbing), dims = 1)
+
+    perturbing .*= min.(targValue, maxValue)
+    pop[:, theChosenPert] += perturbing
     adjustPopulation!(setProbW, pop)
 end
