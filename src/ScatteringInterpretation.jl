@@ -34,6 +34,7 @@ include("storageUtils.jl")
 include("objectiveFunctions.jl")
 include("gradientBased.jl")
 include("blackBoxBased.jl")
+include("plotting.jl")
 
 
 function pullAndTrain(setProbW, objSPC; normDiscount=.01, N=1000)

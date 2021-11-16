@@ -1,6 +1,6 @@
 
 function plotOverTitle(setOfPlots, title, gridSizes)
-    overTitle = Plots.scatter([0,0], [0,1], xlims=(1, 1.1), xshowaxis=false, yshowaxis=false, label="", colorbar=false, grid=false, framestyle=:none, title=title)
+    overTitle = Plots.scatter([0,0], [0,1], xlims=(1, 1.1), xshowaxis=false, yshowaxis=false, label="", colorbar=false, grid=false, framestyle=:none, title=title, bottom_margin=-20Plots.px, )
     lay = @layout [a{.00001h}; grid(gridSizes...)]
     plot(overTitle, setOfPlots..., layout=lay)
 end
