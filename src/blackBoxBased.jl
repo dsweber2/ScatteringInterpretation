@@ -5,7 +5,7 @@ given a BlackBoxOptim `OptController` with some kind of population based method,
 """
 function adjustPopulation!(setProbW, popMat)
     for i = 1:size(popMat, 2)
-        setProbW.optimizer.population[i] = copy(popMat[:,i])
+        setProbW.optimizer.population[i] = copy(popMat[:, i])
     end
 end
 
@@ -17,7 +17,7 @@ getPopulation(setProbW) = setProbW.runcontrollers[end].optimizer.population.indi
 given a dct representation of a signal `x` and an objective function `FourierObj` which operates on the dct representation of a signal, find the frequency index a super naive way of finding a bandpass threshold so that x (which is represented as dct of the target)  FourierObj
 """
 function BandpassStayInFourier(x, FourierObj)
-    flattenFrom(x, i) = cat(x[1:i,axes(x)[2:end]...], zeros(size(x, 1) - i), dims=1)
+    flattenFrom(x, i) = cat(x[1:i, axes(x)[2:end]...], zeros(size(x, 1) - i), dims=1)
     evalFilters = [FourierObj(flattenFrom(x, ncut)) for ncut = 2:size(x, 1)]
     cutFreq = argmin(evalFilters)
     return flattenFrom(x, cutFreq + 1), evalFilters[cutFreq], cutFreq + 1
@@ -31,10 +31,10 @@ scores, e.g.
     scores = [FourierObj(x) for x in eachslice(spacePop, dims=2)]
     sortIndArray = sortperm(scores)
 """
-function dampenAboveBestHardbandpass(freqPop, sortIndArray, FourierObj, dampenAmount=.1)
-    flattened, val, freqI = BandpassStayInFourier(freqPop[:,sortIndArray[1]], FourierObj)
+function dampenAboveBestHardbandpass(freqPop, sortIndArray, FourierObj, dampenAmount=0.1)
+    flattened, val, freqI = BandpassStayInFourier(freqPop[:, sortIndArray[1]], FourierObj)
     newFreqPop = copy(freqPop)
-    newFreqPop[freqI + 1:end,:] .*= dampenAmount
+    newFreqPop[freqI+1:end, :] .*= dampenAmount
     return newFreqPop
 end
 
@@ -45,12 +45,12 @@ function perturbRand(setProbW, frac=1 / 5)
     theChosenPert = rand(1:size(pop, 2), round(Int, popSize * frac))
     # add pink noise with .1 of the norm to 100 randomly selected vectors
     perturbing = dct(pinkStart(Ndims, -1, nPert), 1)
-    perturbing ./= [norm(x) for x in eachslice(perturbing, dims = 2)]'
-    pop[:, theChosenPert] += perturbing .* [norm(x) for x in eachslice(pop[:, theChosenPert], dims = 2)]'
+    perturbing ./= [norm(x) for x in eachslice(perturbing, dims=2)]'
+    pop[:, theChosenPert] += perturbing .* [norm(x) for x in eachslice(pop[:, theChosenPert], dims=2)]'
     adjustPopulation!(setProbW, pop)
 end
 
-function perturbWorst(setProbW, scores, frac = 1 / 5, transform = x -> dct(x, 1), boundLevel = 1e5, noiseColor = -1)
+function perturbWorst(setProbW, scores, frac=1 / 5, transform=x -> dct(x, 1), boundLevel=1e5, noiseColor=-1)
     pop = setProbW.runcontrollers[end].optimizer.population.individuals
     Ndims = size(pop, 1)
     popSize = size(pop, 2)
@@ -59,8 +59,8 @@ function perturbWorst(setProbW, scores, frac = 1 / 5, transform = x -> dct(x, 1)
     # add pink noise
     perturbing = transform(pinkStart(Ndims, noiseColor, nPert))
     # with .1 of the norm to the worst frac vectors
-    targValue = 0.3 * [norm(x) for x in eachslice(pop[:, theChosenPert], dims = 2)]' ./ [norm(x) for x in eachslice(perturbing, dims = 2)]'
-    maxValue = minimum(boundLevel .- abs.(pop[:, theChosenPert]), dims = 1) ./ maximum(abs.(perturbing), dims = 1)
+    targValue = 0.3 * [norm(x) for x in eachslice(pop[:, theChosenPert], dims=2)]' ./ [norm(x) for x in eachslice(perturbing, dims=2)]'
+    maxValue = minimum(boundLevel .- abs.(pop[:, theChosenPert]), dims=1) ./ maximum(abs.(perturbing), dims=1)
 
     perturbing .*= min.(targValue, maxValue)
     pop[:, theChosenPert] += perturbing
