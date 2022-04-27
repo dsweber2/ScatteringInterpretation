@@ -9,14 +9,14 @@ end
 
 function expandRecord!(record::Array{Array}, nEpochs)
     for ii in 1:length(record)
-        adding = zeros(Float32, size(record[ii])[1:end - 1]..., nEpochs)
+        adding = zeros(Float32, size(record[ii])[1:end-1]..., nEpochs)
         record[ii] = cat(record[ii], adding, dims=ndims(record[ii]))
         size(record[ii])
     end
 end
 
 function expandRecord!(record::Array{<:Number}, nEpochs)
-    adding = zeros(eltype(record), size(record)[1:end - 1]..., nEpochs)
+    adding = zeros(eltype(record), size(record)[1:end-1]..., nEpochs)
     record[:] = cat(record, adding, dims=ndims(record))
 end
 
@@ -25,7 +25,7 @@ function addCurrent!(record, stack::stFlux, ii)
 
     for (kk, x) in enumerate(p)
         ax = axes(x)
-        record[kk][ax..., ii + 1] = x
+        record[kk][ax..., ii+1] = x
     end
 end
 
@@ -35,7 +35,7 @@ function addCurrent!(record, result, ii)
     record[]
     for (kk, x) in enumerate(p)
         ax = axes(x)
-        record[kk][ax..., ii + 1] = x
+        record[kk][ax..., ii+1] = x
     end
 end
 

@@ -14,7 +14,7 @@ Note that the joint case is defined for y as an array. In that case, the path is
 ignored and the difference across the whole output is evaluted.
 """
 function makeObjFun(target::ScatteredOut, path::pathLocs, st,
-                    normalize=st.normalize, λ=1e-10, jointObj=false, innerProd=false)
+    normalize=st.normalize, λ=1e-10, jointObj=false, innerProd=false)
     if jointObj # return a function of both x and y?
         if normalize # normalize the input
             if innerProd # just maximize the dot product?
@@ -26,7 +26,7 @@ function makeObjFun(target::ScatteredOut, path::pathLocs, st,
             else
                 jointNormObjxy(x, y::ScatteredOut) = sum(mse(a[1], a[2]) for a in zip(st(x)[path], y[path])) + λ * norm(x)
                 function jointNormObjxy(x, y::AbstractArray)
-                    sum((ScatteringTransform.flatten(st(x)) .- y).^2) + λ * norm(x)
+                    sum((ScatteringTransform.flatten(st(x)) .- y) .^ 2) + λ * norm(x)
                 end
                 return jointNormObjxy
             end
@@ -34,7 +34,7 @@ function makeObjFun(target::ScatteredOut, path::pathLocs, st,
             jointObjxy(x, y::ScatteredOut) = sum(mse(a[1], a[2]) for a in
                                                  zip(st(x)[path], y[path]))
             function jointObjxy(x, y::AbstractArray)
-                sum((ScatteringTransform.flatten(st(x)) .- y).^2)
+                sum((ScatteringTransform.flatten(st(x)) .- y) .^ 2)
             end
             return jointObjxy
         end
@@ -54,7 +54,7 @@ fit the target in the scattering domain and try to keep the input domain norm ne
 function makeNormMatchObjFun(target, st, normTarget, λ)
     jointNormObj(x) = sum(mse(a[1], a[2]) for a in zip(st(x), target)) + λ * (normTarget - norm(x))^2
     function jointNormObjxy(x)
-        sum((ScatteringTransform.flatten(st(x)) .- target).^2) + λ * (normTarget - norm(x))^2
+        sum((ScatteringTransform.flatten(st(x)) .- target) .^ 2) + λ * (normTarget - norm(x))^2
     end
 end
 """
@@ -77,8 +77,8 @@ Given a collection of vectors β used in multinomial regression, fit the positiv
 and negative parts separately
 """
 function fitPositiveNegativeSeperately(β, inputSize; Niter=100, nExEach=1,
-                                       initGen=randn, trainThese=1:size(β, 2),
-                                       varargs...)
+    initGen=randn, trainThese=1:size(β, 2),
+    varargs...)
     βplus = max.(β, 0)
     βminus = max.(-β, 0)
     initPlus = initGen(inputSize, 1, nExEach, length(trainThese))
@@ -93,13 +93,13 @@ distFromI(ii::CartesianIndex, jj, normType) = norm(ii.I .- jj, normType)
 distFromI(ii, jj, normType) = norm(ii - jj, normType)
 distFromI(ii, jj::Tuple{<:Integer}, normType) = norm(ii - jj[1], normType)
 function computeSingleWeightMatrix(target, p::pathLocs, Pnorm, Nd=1)
-    outDims = map(x -> x[1 + Nd:end], size(target))
+    outDims = map(x -> x[1+Nd:end], size(target))
     weights = map(x -> fill(Inf, x...), outDims)
     n = ndims(target)
     for (layerI, jj) in enumerate(p.indices)
         if jj !== nothing
             layInds = eachindex(view(weights[layerI], axes(weights[layerI])...))
-            weights[layerI][:] = map(ii -> distFromI(ii, jj[1 + n:end - 1], Pnorm), layInds)
+            weights[layerI][:] = map(ii -> distFromI(ii, jj[1+n:end-1], Pnorm), layInds)
         end
     end
     return weights
@@ -125,17 +125,17 @@ function weightByDistance(target, pathCollection, St, distanceNorm=1.0, elementN
         total = 0.0
         # minimize the irrelevant locations
         for ii in usedLayers
-            w = netWeight[ii + 1] # just a matrix
-            total += sum(reshape(w, (1, size(w)...)) .* (Stx[ii] .- target[ii]).^elementNorm)
+            w = netWeight[ii+1] # just a matrix
+            total += sum(reshape(w, (1, size(w)...)) .* (Stx[ii] .- target[ii]) .^ elementNorm)
         end
         # maximize the relevant ones
-        onPath = mapreduce(p -> sum((Stx[p] .- target[p]).^elementNorm), +,  pathCollection)
+        onPath = mapreduce(p -> sum((Stx[p] .- target[p]) .^ elementNorm), +, pathCollection)
         return total + onPath
     end
 end
 
 
 function allBut(l, w, x)
-    ii = LinearIndices(x)[l,w,1]
-    x[[1:(ii - 1)... (ii + 1):end...]]
+    ii = LinearIndices(x)[l, w, 1]
+    x[[1:(ii-1)... (ii+1):end...]]
 end
