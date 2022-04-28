@@ -13,15 +13,14 @@ using Plots # who cares about weight really?
 using Dates
 using FileIO
 using Serialization
+using BlackBoxOptim
+using BlackBoxOptim: num_func_evals
 
-import Adapt: adapt
-import ChainRules: rrule
-import Zygote: has_chain_rrule, rrule
-import Wavelets: eltypes
 
-export makeObjFun, saveSerial
+export makeObjFun, makeCoordMaxObj, saveSerial
 export getPopulation, adjustPopulation!, plotFirstXEx, plotOverTitle
 export perturbWorst, pinkStart
+export fittingSinglePath
 include("noiseMethods.jl")
 include("storageUtils.jl")
 include("objectiveFunctions.jl")

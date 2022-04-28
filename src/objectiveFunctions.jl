@@ -12,7 +12,7 @@ shape of target.
 Note that the joint case is defined for y as an array. In that case, the path is
 ignored and the difference across the whole output is evaluted.
 """
-function makeObjFun(target::ScatteredOut, path::pathLocs, st, normalize=st.normalize, λ=1e-10, jointObj=false, innerProd=false)
+function makeObjFun(target::ScatteredOut, path::pathLocs, st, normalize=st.normalize, λ=1e-5, innerProd=false, pretransform=idct)
     if jointObj # return a function of both x and y?
         if normalize # normalize the input
             if innerProd # just maximize the dot product?
@@ -38,9 +38,22 @@ function makeObjFun(target::ScatteredOut, path::pathLocs, st, normalize=st.norma
         end
     else
         if normalize
-            return normObjx(x) = sum(mse(a[1], a[2]) for a in zip(st(x)[path], target[path])) + λ * norm(x)
-        else
-            return unnormObjx(x) = sum(mse(a[1], a[2]) for a in zip(st(x)[path], target[path]))
+            if innerProd
+                function normObjx(x̂)
+                    x = pretransform(x̂)
+                    t = st(x)
+                    1.1f0^()
+                end
+                return normObjx
+            end
         end
     end
+end
+function makeCoordMaxObj(path, st; normFun=norm, λ=1e-5, pretransform=x̂ -> idct(x̂, 1))
+    function normObjx(x̂)
+        x = pretransform(x̂)
+        t = st(x)
+        1.1f0^(-t[path][1] + λ * normFun(x))
+    end
+    return normObjx
 end
