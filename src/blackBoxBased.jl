@@ -40,8 +40,37 @@ function perturbWorst(setProbW, scores; noiseFun=pinkNoise, frac=1 / 5, transfor
     pop[:, theChosenPert] += perturbing
     adjustPopulation!(setProbW, pop)
 end
-
-function fittingSinglePath(N, pathTuple, l=-1, CW=dog2, namedCW="default"; makeObjective=makeCoordMaxObj, popSize=500, totalMins=60, nMinsBBO=3, perturbRate=1 / 5, extraName="", reprFun=(x -> (dct(x, 1)), x̂ -> idct(x̂, 1)), normFun=norm, λ=1e-5, searchRange=1000, relScoreConvThresh=0.01, saveDir="", randFun=pinkNoise, perturbFun=perturbWorst, # unique to this function
+"""
+    fittingSinglePath(N, pathTuple, l=-1, CW=dog2, namedCW="default"; makeObjective=makeCoordMaxObj, popSize=500, totalMins=60, nMinsBBO=3, perturbRate=1 / 5, extraName="", reprFun=(x -> (dct(x, 1)), x̂ -> idct(x̂, 1)), normFun=norm, λ=1e-5, searchRange=1000, relScoreConvThresh=0.01, saveDir="", randFun=pinkNoise, perturbFun=perturbWorst, β=[2, 2, 1], averagingLength=[-1, -1, 2], outputPool=8, normalize=false, poolBy=3 // 2, pNorm=2, extraOctaves=0, kwargs...) # for St, but also useful for naming
+- `N`: the length of the target
+- `pathTuple`: the target path, e.g. (5,3) is the 5th frequency in the second layer and the 3rd frequency in the first layer
+- `l=-1`: the target location. The default automatically caluclates the center of the signal in the output location.
+- `CW=dog2`: the target wavelet type
+- `namedCW="default"`: a short name for the target wavelet for printing purposes
+- `makeObjective=makeCoordMaxObj`: the function used to construct the objective. By default, it maximizes the target location, and penalizes using the 2 norm.
+- `popSize=500`: the number of candidate solutions used
+- `totalMins=60`: the total training time allowed before cutting off the run
+- `nMinsBBO=3`: the amount of time to run the evolution before perturbing
+- `perturbRate=1 / 5`: the fraction of the population to perturb
+- `extraName=""`: anything extra to put at the end of filename to distinguish from previous runs (which are otherwise overwritten)
+- `reprFun=(x -> (dct(x,1)), x̂ -> idct(x̂,1))`: a pair of functions determining the domain in which the optimization takes place
+- `normFun=norm`: the norm used in the objective fucntion. By default the 2 norm
+- `λ=1e-5`: the penalty in the objective function
+- `searchRange=1000`: the maximum magnitude of any particular coefficient
+- `relScoreConvThresh=0.01`: the relative score convergence threshold. If the relative difference between the best and worst error is below this, return early
+- `randFun=pinkNoise`: the function to create noise. By default it creates colored noise with exponent uniformly between .5 and 3.
+- `perturbFun=perturbWorst`: the function to perturb out of premature convergence. By default it disturbs the worst examples using `randFun`.
+- `saveDir=""`: where to save. If unspecified, most of the variables below are used in the name
+- `β=[2,2,1]`:
+- `averagingLength=[-1,-1,2]`:
+- `outputPool=8`:
+- `normalize=false`:
+- `poolBy=3 // 2`:
+- `pNorm=2`:
+- `extraOctaves=0`:
+- `kwargs`: any additional keyword arguments given to the `scatteringTransform` constructor.
+"""
+function fittingSinglePath(N, pathTuple, l=-1, CW=dog2, namedCW="default"; makeObjective=makeCoordMaxObj, popSize=500, totalMins=60, nMinsBBO=3, perturbRate=1 / 5, extraName="", reprFun=(x -> (dct(x, 1)), x̂ -> idct(x̂, 1)), normFun=x -> norm(x)^2, λ=1.0f-5, searchRange=1000, relScoreConvThresh=0.01, saveDir="", randFun=pinkNoise, perturbFun=perturbWorst, # unique to this function
     β=[2, 2, 1], averagingLength=[-1, -1, 2], outputPool=8, normalize=false, poolBy=3 // 2, pNorm=2, extraOctaves=0, kwargs...) # for St, but also useful for naming
     layer = length(pathTuple)
     St = scatteringTransform((N, 1, 1), 2; cw=CW, poolBy=poolBy, β=β, averagingLength=averagingLength, outputPool=outputPool, normalize=normalize, σ=abs, p=pNorm, extraOctaves=extraOctaves, kwargs...)

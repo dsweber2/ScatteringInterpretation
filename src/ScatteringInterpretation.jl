@@ -19,7 +19,7 @@ using BlackBoxOptim: num_func_evals
 
 export makeObjFun, makeCoordMaxObj, saveSerial
 export getPopulation, adjustPopulation!, plotFirstXEx, plotOverTitle
-export perturbWorst, pinkStart
+export perturbWorst, pinkNoise
 export fittingSinglePath
 include("noiseMethods.jl")
 include("storageUtils.jl")
