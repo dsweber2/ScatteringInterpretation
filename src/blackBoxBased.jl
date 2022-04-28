@@ -41,7 +41,7 @@ function perturbWorst(setProbW, scores; noiseFun=pinkNoise, frac=1 / 5, transfor
     adjustPopulation!(setProbW, pop)
 end
 
-function fittingSinglePath(N, pathTuple, l=-1, CW=dog2, namedCW="none"; makeObjective=makeCoordMaxObj, popSize=500, totalMins=60, nMinsBBO=3, perturbRate=1 / 5, extraName="", reprFun=(x -> (dct(x, 1)), x̂ -> idct(x̂, 1)), normFun=norm, λ=1e-5, searchRange=1000, relScoreConvThresh=0.01, saveDir="", randFun=pinkNoise, perturbFun=perturbWorst, # unique to this function
+function fittingSinglePath(N, pathTuple, l=-1, CW=dog2, namedCW="default"; makeObjective=makeCoordMaxObj, popSize=500, totalMins=60, nMinsBBO=3, perturbRate=1 / 5, extraName="", reprFun=(x -> (dct(x, 1)), x̂ -> idct(x̂, 1)), normFun=norm, λ=1e-5, searchRange=1000, relScoreConvThresh=0.01, saveDir="", randFun=pinkNoise, perturbFun=perturbWorst, # unique to this function
     β=[2, 2, 1], averagingLength=[-1, -1, 2], outputPool=8, normalize=false, poolBy=3 // 2, pNorm=2, extraOctaves=0, kwargs...) # for St, but also useful for naming
     layer = length(pathTuple)
     St = scatteringTransform((N, 1, 1), 2; cw=CW, poolBy=poolBy, β=β, averagingLength=averagingLength, outputPool=outputPool, normalize=normalize, σ=abs, p=pNorm, extraOctaves=extraOctaves, kwargs...)
@@ -53,12 +53,12 @@ function fittingSinglePath(N, pathTuple, l=-1, CW=dog2, namedCW="none"; makeObje
     path = pathLocs(layer, (l, pathTuple...))
     aveLenStr = mapreduce(x -> "$x", *, averagingLength)
     if saveDir == ""
-        saveDir = joinpath("..", "..", "results", "singleFits", "$(namedCW)", "poolBy$(round(poolBy, sigdigits=3))_outPool$(outputPool)_pNorm$(pNorm)_aveLen$(aveLenStr)_extraOct$(extraOctaves)", "lay$(layer)", "")
+        saveDir = joinpath("..", "results", "singleFits", "$(namedCW)", "poolBy$(round(poolBy, sigdigits=3))_outPool$(outputPool)_pNorm$(pNorm)_aveLen$(aveLenStr)_extraOct$(extraOctaves)", "lay$(layer)", "")
     end
     if !isdir(saveDir)
         mkpath(saveDir)
     end
-    locDir = joinpath(saveDir, string(["l$(layer-ii+1)=" * string(x) * "_" for (ii, x) in enumerate(pathTuple)]...) * "/")
+    locDir = joinpath(saveDir, string(["l$(layer-ii+1)=" * string(x) * "_" for (ii, x) in enumerate(pathTuple)]...))
     saveName = joinpath(locDir, "data$(extraName).jld2")
     saveSerialName = joinpath(locDir, "data$(extraName)")
     if !isdir(locDir)
