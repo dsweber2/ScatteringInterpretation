@@ -33,9 +33,8 @@ for (ii, CW) in enumerate(waveletExamples)
     println("----------------------------------------------------------------------------------------------")
     println("-------------------------------starting $(CW)-------------------------------")
     println("----------------------------------------------------------------------------------------------")
-    namedCW = shortNames[ii]
     St = scatteringTransform((N, 1, 1), cw=CW, 2, poolBy=poolBy, β=β, averagingLength=averagingLength, outputPool=outputPool, normalize=normalize, σ=abs, p=pNorm, extraOctaves=extraOctaves)
-    J1, J2 = map(x -> length(x[1]), getWavelets(St))
+    J1, J2 = map(x -> length(x), getWavelets(St))
     @sync @distributed for w1 in 1:J1-1
         fittingSinglePath(N, (w1,), totalMins=totalMins, cw=CW, namedCW=shortNames[ii])
         fittingSinglePath(N, (w1,), reprFun=(identity, identity), extraName="SPACE", cw=CW, namedCW=shortNames[ii], totalMins=totalMins)
