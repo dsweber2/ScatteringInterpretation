@@ -1,5 +1,5 @@
 using Distributed
-addprocs(12)
+addprocs(8)
 @everywhere using ScatteringTransform, ScatteringInterpretation, ContinuousWavelets
 
 N = 128
@@ -61,7 +61,7 @@ extraName = ""
 for (ii, CW) = enumerate(waveletExamples)
     namedCW = shortNames[ii]
     St = scatteringTransform((N, 1, 1), cw=CW, 2, poolBy=poolBy, β=β, averagingLength=averagingLength, outputPool=outputPool, normalize=normalize, σ=abs, p=pNorm, extraOctaves=extraOctaves)
-    J1, J2 = map(x -> length(x[1]), getWavelets(St))
+    J1, J2 = map(x -> length(x), getWavelets(St))
     listOfLocations = ([(j2, j1) for j1 = 1:(J1-1), j2 = 1:(J2-1)]...,)
     println("doing $CW, there are $(length(listOfLocations)) examples to do")
     # second layer setup begin
