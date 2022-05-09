@@ -78,6 +78,7 @@ function fittingSinglePath(N, pathTuple; loc=-1, CW=dog2, namedCW="default", mak
     Sx = St(x)
     if loc <= 0
         loc = ceil(Int, 1 / 2 * size(Sx[layer], 1))
+        includeLoc = false
     end
     path = pathLocs(layer, (loc, pathTuple...))
     aveLenStr = mapreduce(x -> "$x", *, averagingLength)
@@ -89,6 +90,9 @@ function fittingSinglePath(N, pathTuple; loc=-1, CW=dog2, namedCW="default", mak
         mkpath(saveDir)
     end
     locDir = joinpath(saveDir, string(["l$(layer-ii+1)=" * string(x) * "_" for (ii, x) in enumerate(pathTuple)]...))
+    if includeLoc
+        locDir = joinpath(locDir, "location$(loc)")
+    end
     saveName = joinpath(locDir, "data$(extraName).jld2")
     saveSerialName = joinpath(locDir, "data$(extraName)")
     if !isdir(locDir)

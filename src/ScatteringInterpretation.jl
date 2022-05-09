@@ -2,6 +2,7 @@ module ScatteringInterpretation
 using ScatteringTransform
 using Random
 using Statistics
+using IterTools
 using CUDA
 using FFTW
 using Wavelets, ContinuousWavelets
@@ -17,7 +18,7 @@ using BlackBoxOptim
 using BlackBoxOptim: num_func_evals
 
 
-export makeObjFun, makeCoordMaxObj, saveSerial
+export makeObjFun, makeCoordMaxObj, saveSerial, loadData
 export getPopulation, adjustPopulation!, plotFirstXEx, plotOverTitle
 export perturbWorst, pinkNoise
 export fittingSinglePath
