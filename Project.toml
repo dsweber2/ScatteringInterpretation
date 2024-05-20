@@ -4,9 +4,11 @@ authors = ["dsweber2 <david.weber2@protonmail.com> and contributors"]
 version = "0.1.2"
 
 [deps]
+Adapt = "79e6a3ab-5dfb-504d-930d-738a2a938a0e"
 BlackBoxOptim = "a134a8b2-14d6-55f6-9291-3336d3ab0209"
 CUDA = "052768ef-5323-5732-b1bb-66c8b64840ba"
 ContinuousWavelets = "96eb917e-2868-4417-9cb6-27e7ff17528f"
+Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
 FFTW = "7a1cc6ca-52ef-59f5-83cd-3a7055c09341"
 FileIO = "5789e2e9-d7fb-5bc7-8068-2c6fae9b9549"
 FourierFilterFlux = "3d7dfd45-6c90-4c9b-b697-194a05757159"
@@ -17,8 +19,11 @@ LaTeXStrings = "b964fa9f-0449-5b57-a5c2-d3ea65f4040f"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
 Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
+RecipesBase = "3cdcf5f2-1ef4-517c-9805-6587b60abb01"
 ScatteringTransform = "eadaac29-8b6b-5395-80fd-9ce36bb46293"
+Serialization = "9e88b42a-f829-5b0c-bbe9-9e923198166b"
 Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
+Wavelets = "29a6e085-ba6d-5f35-a997-948ac2efa89a"
 cuDNN = "02a925ec-e4fe-4b08-9a7e-0d78e3d38ccd"
 
 [compat]
