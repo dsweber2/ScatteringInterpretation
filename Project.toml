@@ -1,7 +1,7 @@
 name = "ScatteringInterpretation"
 uuid = "2e72716b-aab1-426f-8785-52471c319e22"
 authors = ["dsweber2 <david.weber2@protonmail.com> and contributors"]
-version = "0.1.0"
+version = "0.1.1"
 
 [deps]
 BlackBoxOptim = "a134a8b2-14d6-55f6-9291-3336d3ab0209"
@@ -9,6 +9,7 @@ ContinuousWavelets = "96eb917e-2868-4417-9cb6-27e7ff17528f"
 FFTW = "7a1cc6ca-52ef-59f5-83cd-3a7055c09341"
 FileIO = "5789e2e9-d7fb-5bc7-8068-2c6fae9b9549"
 FourierFilterFlux = "3d7dfd45-6c90-4c9b-b697-194a05757159"
+IterTools = "c8e1da08-722c-5040-9ed9-7db0dc04731e"
 JLD = "4138dd39-2aa7-5051-a626-17a0bb65d9c8"
 JLD2 = "033835bb-8acc-5ee8-8aae-3f567f8a3819"
 LaTeXStrings = "b964fa9f-0449-5b57-a5c2-d3ea65f4040f"
@@ -21,8 +22,8 @@ Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
 [compat]
 BlackBoxOptim = "0.6"
 ContinuousWavelets = "1"
-FileIO = "1"
 FFTW = "1"
+FileIO = "1"
 JLD = "0.13"
 JLD2 = "0.4"
 LaTeXStrings = "1"
