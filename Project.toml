@@ -1,7 +1,7 @@
 name = "ScatteringInterpretation"
 uuid = "2e72716b-aab1-426f-8785-52471c319e22"
 authors = ["dsweber2 <david.weber2@protonmail.com> and contributors"]
-version = "0.1.3"
+version = "0.1.4"
 
 [deps]
 AbstractFFTs = "621f4979-c628-5d54-868e-fcf4e3e8185c"
